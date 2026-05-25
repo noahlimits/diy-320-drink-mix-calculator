@@ -57,6 +57,7 @@ input {
 
 h1,
 h2,
+h3,
 p {
   margin: 0;
 }
@@ -218,6 +219,45 @@ h1 {
   color: #4e665f;
   font-size: 0.92rem;
   margin-top: 6px;
+}
+
+.mixing {
+  border-top: 1px solid #ebe6dc;
+  display: grid;
+  gap: 16px;
+  margin-top: 22px;
+  padding-top: 22px;
+}
+
+.mixing h2 {
+  color: #2a261f;
+  font-size: 0.95rem;
+  font-weight: 800;
+}
+
+.instruction-group {
+  display: grid;
+  gap: 8px;
+}
+
+.instruction-group h3 {
+  color: #4b443a;
+  font-size: 0.88rem;
+  font-weight: 800;
+}
+
+.instruction-group ol {
+  color: #4c453b;
+  display: grid;
+  gap: 7px;
+  line-height: 1.45;
+  margin: 0;
+  padding-left: 22px;
+}
+
+.instruction-group li::marker {
+  color: #6f8f72;
+  font-weight: 800;
 }
 
 .note {

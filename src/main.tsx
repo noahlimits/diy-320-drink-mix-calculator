@@ -16,10 +16,10 @@ const dryIngredients: Ingredient[] = [
 ];
 
 const totalDryMixPerServing = 82.25;
-const waterMlPerServing = 500;
+const finalVolumeMlPerServing = 500;
 
 function formatGrams(value: number) {
-  return `${Number.isInteger(value) ? value : value.toFixed(2)} g`;
+  return `${Number(value.toFixed(2)).toString()} g`;
 }
 
 function parseServings(value: string) {
@@ -57,7 +57,7 @@ function App() {
         <header className="hero">
           <p className="eyebrow">Mix by serving count</p>
           <h1 id="calculator-title">DIY 320 Drink Mix Calculator</h1>
-          <p className="subtitle">One serving = 80 g carbs in 500 ml water.</p>
+          <p className="subtitle">One serving = 80 g carbs in a 500 ml finished drink.</p>
         </header>
 
         <div className="serving-panel">
@@ -117,12 +117,33 @@ function App() {
           </div>
         </section>
 
-        <section className="water" aria-label="Optional water">
+        <section className="water" aria-label="Water and final volume">
           <div>
-            <span className="water-label">Optional water</span>
-            <strong>{waterMlPerServing * servings} ml</strong>
+            <span className="water-label">Finished drink volume</span>
+            <strong>{finalVolumeMlPerServing * servings} ml</strong>
           </div>
-          <p>Use as a separate mixing target.</p>
+          <p>Use 500 ml per serving. Add water so the dry mix plus water reaches {finalVolumeMlPerServing * servings} ml total.</p>
+        </section>
+
+        <section className="mixing" aria-labelledby="mixing-title">
+          <h2 id="mixing-title">Mixing basics</h2>
+          <div className="instruction-group">
+            <h3>Dry mix</h3>
+            <ol>
+              <li>Weigh each dry ingredient accurately.</li>
+              <li>Combine in a dry container with a lid.</li>
+              <li>Shake or stir until the powders look evenly blended.</li>
+            </ol>
+          </div>
+          <div className="instruction-group">
+            <h3>Into the flask</h3>
+            <ol>
+              <li>Add part of the water to the flask first.</li>
+              <li>Add the dry mix, cap, and shake hard.</li>
+              <li>Top up with water until the dry mix plus water reaches 500 ml per serving.</li>
+              <li>Shake again until smooth.</li>
+            </ol>
+          </div>
         </section>
 
         <p className="note">

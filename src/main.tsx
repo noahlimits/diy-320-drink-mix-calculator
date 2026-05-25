@@ -8,18 +8,44 @@ type Ingredient = {
   gramsPerServing: number;
 };
 
-const dryIngredients: Ingredient[] = [
-  { name: "Sucrose / table sugar", gramsPerServing: 71 },
-  { name: "Maltodextrin", gramsPerServing: 9 },
-  { name: "Pectin", gramsPerServing: 1.25 },
-  { name: "Sodium alginate", gramsPerServing: 1 },
-];
+type CarbSource = "sucrose" | "fructose";
+
+type Formula = {
+  label: string;
+  sourceName: string;
+  primaryIngredient: Ingredient;
+  maltodextrinGrams: number;
+  ratioText: string;
+  note: string;
+};
 
 const totalDryMixPerServing = 82.25;
 const finalVolumeMlPerServing = 500;
 const starterSugarPerServing = 25;
 const carbohydrateGramsPerServing = 80;
 const caloriesPerCarbGram = 4;
+const hydrocolloids: Ingredient[] = [
+  { name: "Pectin", gramsPerServing: 1.25 },
+  { name: "Sodium alginate", gramsPerServing: 1 },
+];
+const formulas: Record<CarbSource, Formula> = {
+  sucrose: {
+    label: "Sucrose / table sugar",
+    sourceName: "sucrose",
+    primaryIngredient: { name: "Sucrose / table sugar", gramsPerServing: 71 },
+    maltodextrinGrams: 9,
+    ratioText: "0.8 fructose : 1 glucose",
+    note: "Sucrose digests into fructose and glucose, so this version approximates the target ratio.",
+  },
+  fructose: {
+    label: "Fructose",
+    sourceName: "fructose",
+    primaryIngredient: { name: "Fructose", gramsPerServing: 35.56 },
+    maltodextrinGrams: 44.44,
+    ratioText: "0.8 fructose : 1 glucose",
+    note: "Fructose is counted directly, with maltodextrin providing the glucose side of the ratio.",
+  },
+};
 
 function formatGrams(value: number) {
   return `${Number(value.toFixed(2)).toString()} g`;
@@ -41,6 +67,13 @@ function parseServings(value: string) {
 function App() {
   const [servings, setServings] = useState(1);
   const [servingInput, setServingInput] = useState("1");
+  const [carbSource, setCarbSource] = useState<CarbSource>("sucrose");
+  const formula = formulas[carbSource];
+  const dryIngredients: Ingredient[] = [
+    formula.primaryIngredient,
+    { name: "Maltodextrin", gramsPerServing: formula.maltodextrinGrams },
+    ...hydrocolloids,
+  ];
 
   const updateServings = (nextServings: number) => {
     const safeServings = Math.max(1, nextServings);
@@ -70,7 +103,23 @@ function App() {
           <p className="eyebrow">Mix by serving count</p>
           <h1 id="calculator-title">DIY 320 Drink Mix Calculator</h1>
           <p className="subtitle">One serving = 80 g carbs in a 500 ml finished drink.</p>
+          <div className="ratio-callout" aria-label="Fructose to glucose ratio">
+            <span>Fructose-to-glucose ratio</span>
+            <strong>{formula.ratioText}</strong>
+          </div>
         </header>
+
+        <div className="source-panel">
+          <label htmlFor="carb-source">Carb source</label>
+          <select
+            id="carb-source"
+            value={carbSource}
+            onChange={(event) => setCarbSource(event.target.value as CarbSource)}
+          >
+            <option value="sucrose">Sucrose / table sugar</option>
+            <option value="fructose">Fructose</option>
+          </select>
+        </div>
 
         <div className="serving-panel">
           <label htmlFor="servings">Servings</label>
@@ -147,13 +196,13 @@ function App() {
           <div className="instruction-group">
             <h3>Best dry-mix order</h3>
             <ol>
-              <li>Put about {formatGrams(starterSugarPerServing * servings)} of the sucrose in a dry container.</li>
+              <li>Put about {formatGrams(starterSugarPerServing * servings)} of the {formula.sourceName} in a dry container.</li>
               <li>Add the pectin and sodium alginate, then shake or whisk very thoroughly.</li>
               <li>Add the maltodextrin and mix again.</li>
-              <li>Add the remaining sucrose and mix until the powder looks uniform.</li>
+              <li>Add the remaining {formula.sourceName} and mix until the powder looks uniform.</li>
             </ol>
             <p className="instruction-note">
-              This disperses the pectin and sodium alginate into sugar first, which helps prevent gummy clumps when the powder hits water.
+              This disperses the pectin and sodium alginate into the main carb powder first, which helps prevent gummy clumps when the powder hits water.
             </p>
           </div>
           <div className="instruction-group">
@@ -168,7 +217,7 @@ function App() {
         </section>
 
         <p className="note">
-          This sucrose + maltodextrin version approximates a 0.8 fructose-to-1 glucose ratio after sucrose digestion.
+          {formula.note}
         </p>
       </section>
     </main>

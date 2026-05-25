@@ -260,6 +260,15 @@ h1 {
   font-weight: 800;
 }
 
+.instruction-note {
+  background: #fbfaf7;
+  border-left: 3px solid #6f8f72;
+  color: #5f574c;
+  font-size: 0.9rem;
+  line-height: 1.45;
+  padding: 10px 12px;
+}
+
 .note {
   color: #665f55;
   font-size: 0.88rem;

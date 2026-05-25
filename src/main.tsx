@@ -17,6 +17,7 @@ const dryIngredients: Ingredient[] = [
 
 const totalDryMixPerServing = 82.25;
 const finalVolumeMlPerServing = 500;
+const starterSugarPerServing = 25;
 
 function formatGrams(value: number) {
   return `${Number(value.toFixed(2)).toString()} g`;
@@ -44,6 +45,11 @@ function App() {
   const handleInputChange = (value: string) => {
     if (value === "" || /^\d+$/.test(value)) {
       setServingInput(value);
+
+      const nextValue = Number(value);
+      if (nextValue > 0) {
+        setServings(nextValue);
+      }
     }
   };
 
@@ -128,20 +134,24 @@ function App() {
         <section className="mixing" aria-labelledby="mixing-title">
           <h2 id="mixing-title">Mixing basics</h2>
           <div className="instruction-group">
-            <h3>Dry mix</h3>
+            <h3>Best dry-mix order</h3>
             <ol>
-              <li>Weigh each dry ingredient accurately.</li>
-              <li>Combine in a dry container with a lid.</li>
-              <li>Shake or stir until the powders look evenly blended.</li>
+              <li>Put about {formatGrams(starterSugarPerServing * servings)} of the sucrose in a dry container.</li>
+              <li>Add the pectin and sodium alginate, then shake or whisk very thoroughly.</li>
+              <li>Add the maltodextrin and mix again.</li>
+              <li>Add the remaining sucrose and mix until the powder looks uniform.</li>
             </ol>
+            <p className="instruction-note">
+              This disperses the pectin and sodium alginate into sugar first, which helps prevent gummy clumps when the powder hits water.
+            </p>
           </div>
           <div className="instruction-group">
             <h3>Into the flask</h3>
             <ol>
-              <li>Add part of the water to the flask first.</li>
+              <li>Add 250-350 ml water per serving to the flask first.</li>
               <li>Add the dry mix, cap, and shake hard.</li>
+              <li>Let it sit briefly if needed, then shake again.</li>
               <li>Top up with water until the dry mix plus water reaches 500 ml per serving.</li>
-              <li>Shake again until smooth.</li>
             </ol>
           </div>
         </section>

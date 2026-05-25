@@ -143,6 +143,34 @@ h1 {
   outline: 0;
 }
 
+.calories {
+  align-items: center;
+  background: #25211b;
+  border-radius: 8px;
+  color: #fff;
+  display: flex;
+  justify-content: space-between;
+  margin-top: 18px;
+  min-height: 64px;
+  padding: 16px;
+}
+
+.calories span {
+  font-weight: 800;
+}
+
+.calories strong {
+  font-size: 1.8rem;
+  line-height: 1;
+}
+
+.calories strong::after {
+  content: " kcal";
+  color: #ded8cd;
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
 .ingredients {
   padding: 24px 0 18px;
 }

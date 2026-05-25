@@ -18,13 +18,19 @@ const dryIngredients: Ingredient[] = [
 const totalDryMixPerServing = 82.25;
 const finalVolumeMlPerServing = 500;
 const starterSugarPerServing = 25;
+const carbohydrateGramsPerServing = 80;
+const caloriesPerCarbGram = 4;
 
 function formatGrams(value: number) {
   return `${Number(value.toFixed(2)).toString()} g`;
 }
 
+function formatMl(value: number) {
+  return `${Math.round(value)} ml`;
+}
+
 function parseServings(value: string) {
-  if (!/^\d+$/.test(value)) {
+  if (!/^\d+(\.\d+)?$/.test(value)) {
     return 1;
   }
 
@@ -37,13 +43,13 @@ function App() {
   const [servingInput, setServingInput] = useState("1");
 
   const updateServings = (nextServings: number) => {
-    const safeServings = Math.max(1, Math.floor(nextServings));
+    const safeServings = Math.max(1, nextServings);
     setServings(safeServings);
     setServingInput(String(safeServings));
   };
 
   const handleInputChange = (value: string) => {
-    if (value === "" || /^\d+$/.test(value)) {
+    if (value === "" || /^\d*\.?\d*$/.test(value)) {
       setServingInput(value);
 
       const nextValue = Number(value);
@@ -82,8 +88,8 @@ function App() {
 
             <input
               id="servings"
-              inputMode="numeric"
-              pattern="[0-9]*"
+              inputMode="decimal"
+              pattern="[0-9]*[.]?[0-9]*"
               value={servingInput}
               onBlur={commitInput}
               onChange={(event) => handleInputChange(event.target.value)}
@@ -107,6 +113,11 @@ function App() {
           </div>
         </div>
 
+        <section className="calories" aria-label="Total calories">
+          <span>Total calories</span>
+          <strong>{Math.round(carbohydrateGramsPerServing * caloriesPerCarbGram * servings)}</strong>
+        </section>
+
         <section className="ingredients" aria-labelledby="dry-ingredients-title">
           <div className="section-heading">
             <h2 id="dry-ingredients-title">Dry ingredients</h2>
@@ -126,9 +137,9 @@ function App() {
         <section className="water" aria-label="Water and final volume">
           <div>
             <span className="water-label">Finished drink volume</span>
-            <strong>{finalVolumeMlPerServing * servings} ml</strong>
+            <strong>{formatMl(finalVolumeMlPerServing * servings)}</strong>
           </div>
-          <p>Use 500 ml per serving. Add water so the dry mix plus water reaches {finalVolumeMlPerServing * servings} ml total.</p>
+          <p>Use 500 ml per serving. Add water so the dry mix plus water reaches {formatMl(finalVolumeMlPerServing * servings)} total.</p>
         </section>
 
         <section className="mixing" aria-labelledby="mixing-title">

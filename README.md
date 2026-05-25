@@ -11,12 +11,6 @@ npm run dev
 
 ## Open From GitHub
 
-After this folder is pushed to a GitHub repository, GitHub Pages can publish it automatically from the included workflow.
+Open the app here:
 
-The public app link will use this format:
-
-```text
-https://YOUR_GITHUB_USERNAME.github.io/YOUR_REPOSITORY_NAME/
-```
-
-In the GitHub repo, go to **Settings > Pages**, set **Source** to **GitHub Actions**, then push to `main`.
+https://noahlimits.github.io/diy-320-drink-mix-calculator/

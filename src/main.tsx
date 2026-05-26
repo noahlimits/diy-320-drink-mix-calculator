@@ -601,7 +601,7 @@ function App() {
           <div className="pectin-note">
             <h3>Pectin type matters</h3>
             <p>
-              Use dry, powdered regular fruit pectin. Do not use liquid pectin, and skip products labeled low-sugar or no-sugar pectin. Those versions are formulated differently and may not behave the same way in this mix. Look for a standard powdered pectin sold for traditional jam or jelly making, then blend it thoroughly into the dry carb powder before adding water.
+              Use dry, powdered regular fruit pectin, ideally standard high-methoxyl pectin if the label names the type. Do not use liquid pectin, and skip low-sugar or no-sugar pectins that are calcium-activated or labeled low-methoxyl. Those products are formulated for a different gelling system and may behave differently in this mix. Blend the powder thoroughly into the dry carb base before adding water.
             </p>
           </div>
           <p>

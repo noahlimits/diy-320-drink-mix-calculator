@@ -110,6 +110,11 @@ h1 {
   min-width: 210px;
 }
 
+.runtime-field {
+  flex: 1 1 278px;
+  min-width: 260px;
+}
+
 .field span,
 .dose-field > span,
 .toggle-field > span {
@@ -196,6 +201,50 @@ h1 {
   padding: 0 10px;
   text-align: center;
   width: 100%;
+}
+
+.runtime-control {
+  display: grid;
+  gap: 7px;
+  grid-template-columns: 42px minmax(62px, 0.8fr) minmax(70px, 1fr) 42px;
+}
+
+.runtime-control label {
+  align-items: center;
+  background: #f7f4ee;
+  border: 1px solid #ddd5c8;
+  border-radius: 8px;
+  display: flex;
+  height: 42px;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.runtime-control input {
+  background: transparent;
+  border: 0;
+  color: #181613;
+  font-size: 1.05rem;
+  font-weight: 900;
+  height: 100%;
+  min-width: 0;
+  padding: 0 6px 0 10px;
+  text-align: right;
+  width: 100%;
+}
+
+.runtime-control label:focus-within {
+  border-color: #6f8f72;
+  box-shadow: 0 0 0 3px rgba(111, 143, 114, 0.16);
+}
+
+.runtime-control label span {
+  color: #665f55;
+  flex: 0 0 auto;
+  font-size: 0.74rem;
+  font-weight: 900;
+  padding-right: 8px;
+  text-transform: uppercase;
 }
 
 .toggle-field {
@@ -444,6 +493,7 @@ h1 {
 
   .field,
   .dose-field,
+  .runtime-field,
   .small-field {
     flex-basis: 100%;
   }

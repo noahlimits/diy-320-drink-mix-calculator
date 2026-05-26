@@ -54,6 +54,14 @@ function parsePositiveDecimal(value: string, fallback: number, minimum = 0) {
   return nextValue > minimum ? nextValue : fallback;
 }
 
+function parseNonNegativeInteger(value: string, fallback: number) {
+  if (!/^\d+$/.test(value)) {
+    return fallback;
+  }
+
+  return Number(value);
+}
+
 function getRatioLabel(ratio: number) {
   return `${formatNumber(ratio)} : 1`;
 }
@@ -97,6 +105,10 @@ function buildCarbIngredients(carbSource: CarbSource, totalCarbs: number, ratio:
 function App() {
   const [servings, setServings] = useState(1);
   const [servingInput, setServingInput] = useState("1");
+  const [runHours, setRunHours] = useState(1);
+  const [runMinutes, setRunMinutes] = useState(0);
+  const [runHoursInput, setRunHoursInput] = useState("1");
+  const [runMinutesInput, setRunMinutesInput] = useState("0");
   const [carbSource, setCarbSource] = useState<CarbSource>("sucrose");
   const [doseMode, setDoseMode] = useState<DoseMode>("servings");
   const [carbRateChoice, setCarbRateChoice] = useState<CarbRateChoice>("80");
@@ -107,13 +119,11 @@ function App() {
   const [customRatioInput, setCustomRatioInput] = useState("0.8");
   const [hydrogelMode, setHydrogelMode] = useState(true);
 
-  const minimumDose = doseMode === "runTime" ? 0.1 : 1;
-  const doseStep = doseMode === "runTime" ? 0.25 : 1;
-  const doseLabel = doseMode === "runTime" ? "Run time" : "Servings";
-  const doseAriaLabel = doseMode === "runTime" ? "Run time in hours" : "Number of servings";
+  const totalRunMinutes = runHours * 60 + runMinutes;
+  const runTimeHours = totalRunMinutes / 60;
   const carbsPerHour = carbRateChoice === "custom" ? customCarbsPerHour : Number(carbRateChoice);
   const ratio = ratioChoice === "custom" ? customRatio : Number(ratioChoice);
-  const totalCarbs = doseMode === "runTime" ? servings * carbsPerHour : servings * baselineCarbs;
+  const totalCarbs = doseMode === "runTime" ? runTimeHours * carbsPerHour : servings * baselineCarbs;
   const carbScale = totalCarbs / baselineCarbs;
   const hydrogelWeight = hydrogelMode ? hydrocolloidGramsPer80gCarbs * carbScale : 0;
   const totalDryMix = totalCarbs + hydrogelWeight;
@@ -130,7 +140,7 @@ function App() {
   ];
 
   const updateServings = (nextServings: number) => {
-    const safeServings = Math.max(minimumDose, nextServings);
+    const safeServings = Math.max(1, nextServings);
     setServings(safeServings);
     setServingInput(formatNumber(safeServings));
   };
@@ -148,6 +158,42 @@ function App() {
 
   const commitDoseInput = () => {
     updateServings(parsePositiveDecimal(servingInput, 1, 0));
+  };
+
+  const updateRunTime = (nextTotalMinutes: number) => {
+    const safeTotalMinutes = Math.max(15, nextTotalMinutes);
+    const nextHours = Math.floor(safeTotalMinutes / 60);
+    const nextMinutes = safeTotalMinutes % 60;
+    setRunHours(nextHours);
+    setRunMinutes(nextMinutes);
+    setRunHoursInput(String(nextHours));
+    setRunMinutesInput(String(nextMinutes));
+  };
+
+  const handleRunHoursChange = (value: string) => {
+    if (value === "" || /^\d+$/.test(value)) {
+      setRunHoursInput(value);
+      const nextHours = Number(value);
+      if (value !== "") {
+        setRunHours(nextHours);
+      }
+    }
+  };
+
+  const handleRunMinutesChange = (value: string) => {
+    if (value === "" || /^\d+$/.test(value)) {
+      setRunMinutesInput(value);
+      const nextMinutes = Number(value);
+      if (value !== "") {
+        setRunMinutes(nextMinutes);
+      }
+    }
+  };
+
+  const commitRunTimeInput = () => {
+    const nextHours = parseNonNegativeInteger(runHoursInput, 1);
+    const rawMinutes = parseNonNegativeInteger(runMinutesInput, 0);
+    updateRunTime(nextHours * 60 + rawMinutes);
   };
 
   const handleCustomCarbsChange = (value: string) => {
@@ -239,10 +285,6 @@ function App() {
               onChange={(event) => {
                 const nextMode = event.target.value as DoseMode;
                 setDoseMode(nextMode);
-                const nextMinimum = nextMode === "runTime" ? 0.1 : 1;
-                const nextServings = Math.max(nextMinimum, servings);
-                setServings(nextServings);
-                setServingInput(formatNumber(nextServings));
               }}
             >
               <option value="servings">Servings</option>
@@ -281,45 +323,105 @@ function App() {
             </label>
           )}
 
-          <div className="field dose-field">
-            <span>{doseLabel}{doseMode === "runTime" ? " (hours)" : ""}</span>
-            <div className="stepper" role="group" aria-label={`${doseLabel} selector`}>
-              <button
-                type="button"
-                className="icon-button"
-                onClick={() => updateServings(servings - doseStep)}
-                disabled={servings <= minimumDose}
-                aria-label={`Decrease ${doseLabel.toLowerCase()}`}
-                title={`Decrease ${doseLabel.toLowerCase()}`}
-              >
-                <Minus size={18} strokeWidth={2.5} />
-              </button>
+          {doseMode === "servings" ? (
+            <div className="field dose-field">
+              <span>Servings</span>
+              <div className="stepper" role="group" aria-label="Servings selector">
+                <button
+                  type="button"
+                  className="icon-button"
+                  onClick={() => updateServings(servings - 1)}
+                  disabled={servings <= 1}
+                  aria-label="Decrease servings"
+                  title="Decrease servings"
+                >
+                  <Minus size={18} strokeWidth={2.5} />
+                </button>
 
-              <input
-                inputMode="decimal"
-                pattern="[0-9]*[.]?[0-9]*"
-                value={servingInput}
-                onBlur={commitDoseInput}
-                onChange={(event) => handleDoseInputChange(event.target.value)}
-                onKeyDown={(event) => {
-                  if (event.key === "Enter") {
-                    event.currentTarget.blur();
-                  }
-                }}
-                aria-label={doseAriaLabel}
-              />
+                <input
+                  inputMode="decimal"
+                  pattern="[0-9]*[.]?[0-9]*"
+                  value={servingInput}
+                  onBlur={commitDoseInput}
+                  onChange={(event) => handleDoseInputChange(event.target.value)}
+                  onKeyDown={(event) => {
+                    if (event.key === "Enter") {
+                      event.currentTarget.blur();
+                    }
+                  }}
+                  aria-label="Number of servings"
+                />
 
-              <button
-                type="button"
-                className="icon-button"
-                onClick={() => updateServings(servings + doseStep)}
-                aria-label={`Increase ${doseLabel.toLowerCase()}`}
-                title={`Increase ${doseLabel.toLowerCase()}`}
-              >
-                <Plus size={18} strokeWidth={2.5} />
-              </button>
+                <button
+                  type="button"
+                  className="icon-button"
+                  onClick={() => updateServings(servings + 1)}
+                  aria-label="Increase servings"
+                  title="Increase servings"
+                >
+                  <Plus size={18} strokeWidth={2.5} />
+                </button>
+              </div>
             </div>
-          </div>
+          ) : (
+            <div className="field runtime-field">
+              <span>Run time</span>
+              <div className="runtime-control">
+                <button
+                  type="button"
+                  className="icon-button"
+                  onClick={() => updateRunTime(totalRunMinutes - 15)}
+                  disabled={totalRunMinutes <= 15}
+                  aria-label="Decrease run time by 15 minutes"
+                  title="Decrease run time by 15 minutes"
+                >
+                  <Minus size={18} strokeWidth={2.5} />
+                </button>
+
+                <label>
+                  <input
+                    inputMode="numeric"
+                    value={runHoursInput}
+                    onBlur={commitRunTimeInput}
+                    onChange={(event) => handleRunHoursChange(event.target.value)}
+                    onKeyDown={(event) => {
+                      if (event.key === "Enter") {
+                        event.currentTarget.blur();
+                      }
+                    }}
+                    aria-label="Run time hours"
+                  />
+                  <span>hr</span>
+                </label>
+
+                <label>
+                  <input
+                    inputMode="numeric"
+                    value={runMinutesInput}
+                    onBlur={commitRunTimeInput}
+                    onChange={(event) => handleRunMinutesChange(event.target.value)}
+                    onKeyDown={(event) => {
+                      if (event.key === "Enter") {
+                        event.currentTarget.blur();
+                      }
+                    }}
+                    aria-label="Run time minutes"
+                  />
+                  <span>min</span>
+                </label>
+
+                <button
+                  type="button"
+                  className="icon-button"
+                  onClick={() => updateRunTime(totalRunMinutes + 15)}
+                  aria-label="Increase run time by 15 minutes"
+                  title="Increase run time by 15 minutes"
+                >
+                  <Plus size={18} strokeWidth={2.5} />
+                </button>
+              </div>
+            </div>
+          )}
 
           <label className="toggle-field">
             <span>Hydrogel</span>

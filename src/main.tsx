@@ -29,6 +29,14 @@ function formatGrams(value: number) {
   return `${Number(value.toFixed(2)).toString()} g`;
 }
 
+function roundToStep(value: number, step: number) {
+  return Math.round(value / step) * step;
+}
+
+function roundCarbIngredient(value: number) {
+  return roundToStep(value, 1);
+}
+
 function formatMl(value: number) {
   return `${Math.round(value)} ml`;
 }
@@ -55,34 +63,34 @@ function getRatioOptionLabel(option: RatioChoice) {
     return "Custom";
   }
 
-  if (option === "0.5") {
-    return "0.5 : 1 (2:1 G:F)";
-  }
-
   return `${option} : 1`;
 }
 
 function buildCarbIngredients(carbSource: CarbSource, totalCarbs: number, ratio: number): Ingredient[] {
+  const roundedTotalCarbs = roundToStep(totalCarbs, 1);
   const fructoseGrams = (totalCarbs * ratio) / (1 + ratio);
   const glucoseGrams = totalCarbs / (1 + ratio);
 
   if (carbSource === "fructose") {
+    const fructose = roundCarbIngredient(fructoseGrams);
     return [
-      { name: "Fructose", grams: fructoseGrams },
-      { name: "Maltodextrin", grams: glucoseGrams },
+      { name: "Fructose", grams: fructose },
+      { name: "Maltodextrin", grams: Math.max(0, roundedTotalCarbs - fructose) },
     ];
   }
 
   if (ratio <= 1) {
+    const sucrose = roundCarbIngredient(fructoseGrams * 2);
     return [
-      { name: "Sucrose", grams: fructoseGrams * 2 },
-      { name: "Maltodextrin", grams: Math.max(0, glucoseGrams - fructoseGrams) },
+      { name: "Sucrose", grams: sucrose },
+      { name: "Maltodextrin", grams: Math.max(0, roundedTotalCarbs - sucrose) },
     ].filter((ingredient) => ingredient.grams > 0.005);
   }
 
+  const sucrose = roundCarbIngredient(glucoseGrams * 2);
   return [
-    { name: "Sucrose", grams: glucoseGrams * 2 },
-    { name: "Fructose", grams: Math.max(0, fructoseGrams - glucoseGrams) },
+    { name: "Sucrose", grams: sucrose },
+    { name: "Fructose", grams: Math.max(0, roundedTotalCarbs - sucrose) },
   ].filter((ingredient) => ingredient.grams > 0.005);
 }
 

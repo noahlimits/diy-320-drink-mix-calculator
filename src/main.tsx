@@ -127,7 +127,7 @@ function App() {
   const runTimeHours = totalRunMinutes / 60;
   const carbsPerHour = carbRateChoice === "custom" ? customCarbsPerHour : Number(carbRateChoice);
   const ratio = ratioChoice === "custom" ? customRatio : Number(ratioChoice);
-  const totalCarbs = doseMode === "runTime" ? runTimeHours * carbsPerHour : servings * baselineCarbs;
+  const totalCarbs = doseMode === "runTime" ? runTimeHours * carbsPerHour : servings * carbsPerHour;
   const hourlyVolumeMl = Math.round((carbsPerHour / baselineCarbs) * baselineVolumeMl);
   const carbScale = totalCarbs / baselineCarbs;
   const hydrogelWeight = hydrogelMode ? hydrocolloidGramsPer80gCarbs * carbScale : 0;
@@ -263,7 +263,7 @@ function App() {
           <p className="subtitle">
             {doseMode === "runTime"
               ? `One hour = ${formatGrams(carbsPerHour)} carbs in a ${formatMl(hourlyVolumeMl)} finished drink.`
-              : "One serving = 80 g carbs in a 500 ml finished drink."}
+              : `One serving = ${formatGrams(carbsPerHour)} carbs in a ${formatMl(hourlyVolumeMl)} finished drink.`}
           </p>
           <p className="ratio-line">Fructose : Glucose = {getRatioLabel(ratio)}</p>
         </header>
@@ -320,20 +320,18 @@ function App() {
             </select>
           </label>
 
-          {doseMode === "runTime" && (
-            <label className="field">
-              <span>Carbs/hour</span>
-              <select value={carbRateChoice} onChange={(event) => setCarbRateChoice(event.target.value as CarbRateChoice)}>
-                {carbRateOptions.map((option) => (
-                  <option value={option} key={option}>
-                    {option === "custom" ? "Custom" : `${option} g/hour`}
-                  </option>
-                ))}
-              </select>
-            </label>
-          )}
+          <label className="field">
+            <span>Carbs/hour</span>
+            <select value={carbRateChoice} onChange={(event) => setCarbRateChoice(event.target.value as CarbRateChoice)}>
+              {carbRateOptions.map((option) => (
+                <option value={option} key={option}>
+                  {option === "custom" ? "Custom" : `${option} g/hour`}
+                </option>
+              ))}
+            </select>
+          </label>
 
-          {doseMode === "runTime" && carbRateChoice === "custom" && (
+          {carbRateChoice === "custom" && (
             <label className="field small-field">
               <span>Custom g/hr</span>
               <div className="number-stepper">

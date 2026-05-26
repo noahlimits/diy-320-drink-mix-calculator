@@ -230,6 +230,12 @@ function App() {
     setCustomCarbsInput(formatNumber(nextValue));
   };
 
+  const updateCustomCarbs = (delta: number) => {
+    const nextValue = Math.max(1, customCarbsPerHour + delta);
+    setCustomCarbsPerHour(nextValue);
+    setCustomCarbsInput(formatNumber(nextValue));
+  };
+
   const handleCustomRatioChange = (value: string) => {
     if (value === "" || /^\d*\.?\d*$/.test(value)) {
       setCustomRatioInput(value);
@@ -325,18 +331,41 @@ function App() {
           {doseMode === "runTime" && carbRateChoice === "custom" && (
             <label className="field small-field">
               <span>Custom g/hr</span>
-              <input
-                inputMode="decimal"
-                value={customCarbsInput}
-                onBlur={commitCustomCarbs}
-                onChange={(event) => handleCustomCarbsChange(event.target.value)}
-                onKeyDown={(event) => {
-                  if (event.key === "Enter") {
-                    event.currentTarget.blur();
-                  }
-                }}
-                aria-label="Custom carbs per hour"
-              />
+              <div className="number-stepper">
+                <input
+                  inputMode="decimal"
+                  value={customCarbsInput}
+                  onBlur={commitCustomCarbs}
+                  onChange={(event) => handleCustomCarbsChange(event.target.value)}
+                  onKeyDown={(event) => {
+                    if (event.key === "Enter") {
+                      event.currentTarget.blur();
+                    }
+                  }}
+                  aria-label="Custom carbs per hour"
+                />
+                <div className="stepper-actions" aria-label="Adjust custom carbs per hour">
+                  <button
+                    type="button"
+                    className="stepper-button"
+                    onClick={() => updateCustomCarbs(1)}
+                    aria-label="Increase custom carbs per hour by 1"
+                    title="Increase custom carbs per hour by 1"
+                  >
+                    <Plus size={14} strokeWidth={3} />
+                  </button>
+                  <button
+                    type="button"
+                    className="stepper-button"
+                    onClick={() => updateCustomCarbs(-1)}
+                    disabled={customCarbsPerHour <= 1}
+                    aria-label="Decrease custom carbs per hour by 1"
+                    title="Decrease custom carbs per hour by 1"
+                  >
+                    <Minus size={14} strokeWidth={3} />
+                  </button>
+                </div>
+              </div>
             </label>
           )}
 

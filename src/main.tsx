@@ -1,6 +1,6 @@
 import { StrictMode, useState } from "react";
 import { createRoot } from "react-dom/client";
-import { Minus, Plus } from "lucide-react";
+import { Minus, Moon, Plus, Sun } from "lucide-react";
 import "./styles.css";
 
 type Ingredient = {
@@ -122,6 +122,7 @@ function App() {
   const [customRatio, setCustomRatio] = useState(0.8);
   const [customRatioInput, setCustomRatioInput] = useState("0.8");
   const [hydrogelMode, setHydrogelMode] = useState(true);
+  const [isDarkMode, setIsDarkMode] = useState(false);
 
   const totalRunMinutes = runHours * 60 + runMinutes;
   const runTimeHours = totalRunMinutes / 60;
@@ -255,17 +256,28 @@ function App() {
   };
 
   return (
-    <main className="app-shell">
+    <main className={`app-shell${isDarkMode ? " dark-mode" : ""}`}>
       <section className="calculator" aria-labelledby="calculator-title">
         <header className="hero">
-          <p className="eyebrow">Mix by dosing target</p>
-          <h1 id="calculator-title">DIY Run Fuel Calculator</h1>
-          <p className="subtitle">
-            {doseMode === "runTime"
-              ? `One hour = ${formatGrams(carbsPerHour)} carbs in one 500 ml flask.`
-              : `One serving = ${formatGrams(carbsPerHour)} carbs in one 500 ml flask.`}
-          </p>
-          <p className="ratio-line">Fructose : Glucose = {getRatioLabel(ratio)}</p>
+          <div>
+            <p className="eyebrow">Mix by dosing target</p>
+            <h1 id="calculator-title">DIY Run Fuel Calculator</h1>
+            <p className="subtitle">
+              {doseMode === "runTime"
+                ? `One hour = ${formatGrams(carbsPerHour)} carbs in one 500 ml flask.`
+                : `One serving = ${formatGrams(carbsPerHour)} carbs in one 500 ml flask.`}
+            </p>
+            <p className="ratio-line">Fructose : Glucose = {getRatioLabel(ratio)}</p>
+          </div>
+          <button
+            type="button"
+            className="theme-toggle"
+            onClick={() => setIsDarkMode((currentMode) => !currentMode)}
+            aria-label={isDarkMode ? "Switch to light mode" : "Switch to dark mode"}
+            title={isDarkMode ? "Switch to light mode" : "Switch to dark mode"}
+          >
+            {isDarkMode ? <Sun size={17} strokeWidth={2.4} /> : <Moon size={17} strokeWidth={2.4} />}
+          </button>
         </header>
 
         <section className="control-surface" aria-label="Calculator controls">
@@ -586,6 +598,12 @@ function App() {
 
         <section className="research-notes" aria-labelledby="research-title">
           <h2 id="research-title">Notes and research links</h2>
+          <div className="pectin-note">
+            <h3>Pectin type matters</h3>
+            <p>
+              Use dry, powdered regular fruit pectin. Do not use liquid pectin, and skip products labeled low-sugar or no-sugar pectin. Those versions are formulated differently and may not behave the same way in this mix. Look for a standard powdered pectin sold for traditional jam or jelly making, then blend it thoroughly into the dry carb powder before adding water.
+            </p>
+          </div>
           <p>
             Hydrogel mode may feel smoother for some users at high carb intakes, but evidence is mixed. Multiple transportable carb ratios use both glucose and fructose transport pathways; classic 2:1 glucose:fructose equals 0.5:1 Fructose:Glucose, while newer high-carb approaches often sit closer to 0.8:1 or 1:1.
           </p>

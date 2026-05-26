@@ -128,6 +128,7 @@ function App() {
   const carbsPerHour = carbRateChoice === "custom" ? customCarbsPerHour : Number(carbRateChoice);
   const ratio = ratioChoice === "custom" ? customRatio : Number(ratioChoice);
   const totalCarbs = doseMode === "runTime" ? runTimeHours * carbsPerHour : servings * baselineCarbs;
+  const hourlyVolumeMl = Math.round((carbsPerHour / baselineCarbs) * baselineVolumeMl);
   const carbScale = totalCarbs / baselineCarbs;
   const hydrogelWeight = hydrogelMode ? hydrocolloidGramsPer80gCarbs * carbScale : 0;
   const totalDryMix = totalCarbs + hydrogelWeight;
@@ -259,7 +260,11 @@ function App() {
         <header className="hero">
           <p className="eyebrow">Mix by dosing target</p>
           <h1 id="calculator-title">DIY Run Fuel Calculator</h1>
-          <p className="subtitle">One serving = 80 g carbs in a 500 ml finished drink.</p>
+          <p className="subtitle">
+            {doseMode === "runTime"
+              ? `One hour = ${formatGrams(carbsPerHour)} carbs in a ${formatMl(hourlyVolumeMl)} finished drink.`
+              : "One serving = 80 g carbs in a 500 ml finished drink."}
+          </p>
           <p className="ratio-line">Fructose : Glucose = {getRatioLabel(ratio)}</p>
         </header>
 

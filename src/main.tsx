@@ -196,6 +196,14 @@ function App() {
     updateRunTime(nextHours * 60 + rawMinutes);
   };
 
+  const updateRunHours = (hourDelta: number) => {
+    updateRunTime((runHours + hourDelta) * 60 + runMinutes);
+  };
+
+  const updateRunMinutes = (minuteDelta: number) => {
+    updateRunTime(totalRunMinutes + minuteDelta);
+  };
+
   const handleCustomCarbsChange = (value: string) => {
     if (value === "" || /^\d*\.?\d*$/.test(value)) {
       setCustomCarbsInput(value);
@@ -326,18 +334,7 @@ function App() {
           {doseMode === "servings" ? (
             <div className="field dose-field">
               <span>Servings</span>
-              <div className="stepper" role="group" aria-label="Servings selector">
-                <button
-                  type="button"
-                  className="icon-button"
-                  onClick={() => updateServings(servings - 1)}
-                  disabled={servings <= 1}
-                  aria-label="Decrease servings"
-                  title="Decrease servings"
-                >
-                  <Minus size={18} strokeWidth={2.5} />
-                </button>
-
+              <div className="number-stepper" role="group" aria-label="Servings selector">
                 <input
                   inputMode="decimal"
                   pattern="[0-9]*[.]?[0-9]*"
@@ -351,34 +348,34 @@ function App() {
                   }}
                   aria-label="Number of servings"
                 />
-
-                <button
-                  type="button"
-                  className="icon-button"
-                  onClick={() => updateServings(servings + 1)}
-                  aria-label="Increase servings"
-                  title="Increase servings"
-                >
-                  <Plus size={18} strokeWidth={2.5} />
-                </button>
+                <div className="stepper-actions" aria-label="Adjust servings">
+                  <button
+                    type="button"
+                    className="stepper-button"
+                    onClick={() => updateServings(servings + 1)}
+                    aria-label="Increase servings"
+                    title="Increase servings"
+                  >
+                    <Plus size={14} strokeWidth={3} />
+                  </button>
+                  <button
+                    type="button"
+                    className="stepper-button"
+                    onClick={() => updateServings(servings - 1)}
+                    disabled={servings <= 1}
+                    aria-label="Decrease servings"
+                    title="Decrease servings"
+                  >
+                    <Minus size={14} strokeWidth={3} />
+                  </button>
+                </div>
               </div>
             </div>
           ) : (
             <div className="field runtime-field">
               <span>Run time</span>
               <div className="runtime-control">
-                <button
-                  type="button"
-                  className="icon-button"
-                  onClick={() => updateRunTime(totalRunMinutes - 15)}
-                  disabled={totalRunMinutes <= 15}
-                  aria-label="Decrease run time by 15 minutes"
-                  title="Decrease run time by 15 minutes"
-                >
-                  <Minus size={18} strokeWidth={2.5} />
-                </button>
-
-                <label>
+                <label className="number-stepper">
                   <input
                     inputMode="numeric"
                     value={runHoursInput}
@@ -392,9 +389,30 @@ function App() {
                     aria-label="Run time hours"
                   />
                   <span>hr</span>
+                  <div className="stepper-actions" aria-label="Adjust hours">
+                    <button
+                      type="button"
+                      className="stepper-button"
+                      onClick={() => updateRunHours(1)}
+                      aria-label="Increase run time hours"
+                      title="Increase run time hours"
+                    >
+                      <Plus size={14} strokeWidth={3} />
+                    </button>
+                    <button
+                      type="button"
+                      className="stepper-button"
+                      onClick={() => updateRunHours(-1)}
+                      disabled={totalRunMinutes <= 60}
+                      aria-label="Decrease run time hours"
+                      title="Decrease run time hours"
+                    >
+                      <Minus size={14} strokeWidth={3} />
+                    </button>
+                  </div>
                 </label>
 
-                <label>
+                <label className="number-stepper">
                   <input
                     inputMode="numeric"
                     value={runMinutesInput}
@@ -408,17 +426,28 @@ function App() {
                     aria-label="Run time minutes"
                   />
                   <span>min</span>
+                  <div className="stepper-actions" aria-label="Adjust minutes">
+                    <button
+                      type="button"
+                      className="stepper-button"
+                      onClick={() => updateRunMinutes(15)}
+                      aria-label="Increase run time minutes by 15"
+                      title="Increase run time minutes by 15"
+                    >
+                      <Plus size={14} strokeWidth={3} />
+                    </button>
+                    <button
+                      type="button"
+                      className="stepper-button"
+                      onClick={() => updateRunMinutes(-15)}
+                      disabled={totalRunMinutes <= 15}
+                      aria-label="Decrease run time minutes by 15"
+                      title="Decrease run time minutes by 15"
+                    >
+                      <Minus size={14} strokeWidth={3} />
+                    </button>
+                  </div>
                 </label>
-
-                <button
-                  type="button"
-                  className="icon-button"
-                  onClick={() => updateRunTime(totalRunMinutes + 15)}
-                  aria-label="Increase run time by 15 minutes"
-                  title="Increase run time by 15 minutes"
-                >
-                  <Plus size={18} strokeWidth={2.5} />
-                </button>
               </div>
             </div>
           )}

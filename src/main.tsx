@@ -128,11 +128,11 @@ function App() {
   const carbsPerHour = carbRateChoice === "custom" ? customCarbsPerHour : Number(carbRateChoice);
   const ratio = ratioChoice === "custom" ? customRatio : Number(ratioChoice);
   const totalCarbs = doseMode === "runTime" ? runTimeHours * carbsPerHour : servings * carbsPerHour;
-  const hourlyVolumeMl = Math.round((carbsPerHour / baselineCarbs) * baselineVolumeMl);
+  const doseUnits = doseMode === "runTime" ? runTimeHours : servings;
   const carbScale = totalCarbs / baselineCarbs;
   const hydrogelWeight = hydrogelMode ? hydrocolloidGramsPer80gCarbs * carbScale : 0;
   const totalDryMix = totalCarbs + hydrogelWeight;
-  const finalVolumeMl = Math.round((totalCarbs / baselineCarbs) * baselineVolumeMl);
+  const finalVolumeMl = Math.round(doseUnits * baselineVolumeMl);
   const fullFlasks = Math.floor(finalVolumeMl / baselineVolumeMl);
   const partialFlaskMl = finalVolumeMl % baselineVolumeMl;
   const totalFlaskCount = finalVolumeMl / baselineVolumeMl;
@@ -262,8 +262,8 @@ function App() {
           <h1 id="calculator-title">DIY Run Fuel Calculator</h1>
           <p className="subtitle">
             {doseMode === "runTime"
-              ? `One hour = ${formatGrams(carbsPerHour)} carbs in a ${formatMl(hourlyVolumeMl)} finished drink.`
-              : `One serving = ${formatGrams(carbsPerHour)} carbs in a ${formatMl(hourlyVolumeMl)} finished drink.`}
+              ? `One hour = ${formatGrams(carbsPerHour)} carbs in one 500 ml flask.`
+              : `One serving = ${formatGrams(carbsPerHour)} carbs in one 500 ml flask.`}
           </p>
           <p className="ratio-line">Fructose : Glucose = {getRatioLabel(ratio)}</p>
         </header>
@@ -579,7 +579,7 @@ function App() {
             <ol>
               <li>Add part of the water first.</li>
               <li>Add dry mix, cap, and shake hard.</li>
-              <li>Top up until dry mix plus water reaches {formatMl(finalVolumeMl)} total.</li>
+              <li>Top up each flask to 500 ml, or top the partial flask to its listed volume.</li>
             </ol>
           </div>
         </section>

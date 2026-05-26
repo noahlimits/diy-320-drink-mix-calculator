@@ -41,6 +41,10 @@ function formatMl(value: number) {
   return `${Math.round(value)} ml`;
 }
 
+function formatFlaskCount(value: number) {
+  return Number(value.toFixed(2)).toString();
+}
+
 function formatNumber(value: number) {
   return Number(value.toFixed(2)).toString();
 }
@@ -128,6 +132,11 @@ function App() {
   const hydrogelWeight = hydrogelMode ? hydrocolloidGramsPer80gCarbs * carbScale : 0;
   const totalDryMix = totalCarbs + hydrogelWeight;
   const finalVolumeMl = Math.round((totalCarbs / baselineCarbs) * baselineVolumeMl);
+  const fullFlasks = Math.floor(finalVolumeMl / baselineVolumeMl);
+  const partialFlaskMl = finalVolumeMl % baselineVolumeMl;
+  const totalFlaskCount = finalVolumeMl / baselineVolumeMl;
+  const dryMixPerFullFlask = totalDryMix * (baselineVolumeMl / finalVolumeMl);
+  const dryMixForPartialFlask = totalDryMix * (partialFlaskMl / finalVolumeMl);
   const starterCarbs = Math.min(totalCarbs * starterCarbShare, totalCarbs);
   const dryIngredients: Ingredient[] = [
     ...buildCarbIngredients(carbSource, totalCarbs, ratio),
@@ -483,7 +492,15 @@ function App() {
         </section>
 
         {finalVolumeMl > baselineVolumeMl && (
-          <p className="volume-note">More than one 500 ml flask. Split across flasks or carry extra water to keep the same concentration.</p>
+          <div className="volume-note">
+            <strong>{formatMl(finalVolumeMl)} total = {formatFlaskCount(totalFlaskCount)} x 500 ml flasks.</strong>
+            <span>
+              Fill {fullFlasks} full {fullFlasks === 1 ? "flask" : "flasks"} with about {formatGrams(dryMixPerFullFlask)} dry mix each
+              {partialFlaskMl > 0
+                ? `, then put the remaining ${formatGrams(dryMixForPartialFlask)} in a partial flask and top it to ${formatMl(partialFlaskMl)}.`
+                : "."}
+            </span>
+          </div>
         )}
 
         <section className="ingredients" aria-labelledby="dry-ingredients-title">

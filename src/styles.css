@@ -334,11 +334,21 @@ h1 {
   border: 1px solid #d7e7e1;
   border-radius: 8px;
   color: #35584e;
+  display: grid;
   font-size: 0.86rem;
-  font-weight: 800;
+  gap: 4px;
   line-height: 1.35;
   margin-top: 10px;
   padding: 10px 12px;
+}
+
+.volume-note strong {
+  color: #244d43;
+  font-size: 0.9rem;
+}
+
+.volume-note span {
+  font-weight: 700;
 }
 
 .ingredients {

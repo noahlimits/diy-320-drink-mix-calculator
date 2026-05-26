@@ -23,7 +23,7 @@ const hydrocolloids = [
   { name: "Sodium alginate", gramsPer80gCarbs: 1 },
 ];
 const carbRateOptions: CarbRateChoice[] = ["60", "80", "90", "120", "custom"];
-const ratioOptions: RatioChoice[] = ["0.5", "0.8", "1", "custom"];
+const ratioOptions: RatioChoice[] = ["0.8", "1", "0.5", "custom"];
 
 function formatGrams(value: number) {
   return `${Number(value.toFixed(2)).toString()} g`;
@@ -48,6 +48,18 @@ function parsePositiveDecimal(value: string, fallback: number, minimum = 0) {
 
 function getRatioLabel(ratio: number) {
   return `${formatNumber(ratio)} : 1`;
+}
+
+function getRatioOptionLabel(option: RatioChoice) {
+  if (option === "custom") {
+    return "Custom";
+  }
+
+  if (option === "0.5") {
+    return "0.5 : 1 (2:1 G:F)";
+  }
+
+  return `${option} : 1`;
 }
 
 function buildCarbIngredients(carbSource: CarbSource, totalCarbs: number, ratio: number): Ingredient[] {
@@ -188,7 +200,7 @@ function App() {
             <select value={ratioChoice} onChange={(event) => setRatioChoice(event.target.value as RatioChoice)}>
               {ratioOptions.map((option) => (
                 <option value={option} key={option}>
-                  {option === "custom" ? "Custom" : `${option} : 1`}
+                  {getRatioOptionLabel(option)}
                 </option>
               ))}
             </select>

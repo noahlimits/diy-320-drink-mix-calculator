@@ -9,6 +9,7 @@ type Ingredient = {
 };
 
 type CarbSource = "sucrose" | "fructose";
+type DoseMode = "servings" | "runTime";
 
 type Formula = {
   label: string;
@@ -30,9 +31,9 @@ const hydrocolloids: Ingredient[] = [
 ];
 const formulas: Record<CarbSource, Formula> = {
   sucrose: {
-    label: "Sucrose / table sugar",
+    label: "Sucrose",
     sourceName: "sucrose",
-    primaryIngredient: { name: "Sucrose / table sugar", gramsPerServing: 71 },
+    primaryIngredient: { name: "Sucrose", gramsPerServing: 71 },
     maltodextrinGrams: 9,
     ratioText: "0.8 fructose : 1 glucose",
     note: "Sucrose digests into fructose and glucose, so this version approximates the target ratio.",
@@ -55,20 +56,29 @@ function formatMl(value: number) {
   return `${Math.round(value)} ml`;
 }
 
-function parseServings(value: string) {
-  if (!/^\d+(\.\d+)?$/.test(value)) {
+function formatNumber(value: number) {
+  return Number(value.toFixed(2)).toString();
+}
+
+function parseDose(value: string, minimum: number) {
+  if (!/^(\d+(\.\d*)?|\.\d+)$/.test(value)) {
     return 1;
   }
 
   const nextValue = Number(value);
-  return nextValue > 0 ? nextValue : 1;
+  return nextValue > 0 ? Math.max(minimum, nextValue) : 1;
 }
 
 function App() {
   const [servings, setServings] = useState(1);
   const [servingInput, setServingInput] = useState("1");
   const [carbSource, setCarbSource] = useState<CarbSource>("sucrose");
+  const [doseMode, setDoseMode] = useState<DoseMode>("servings");
   const formula = formulas[carbSource];
+  const minimumDose = doseMode === "runTime" ? 0.1 : 1;
+  const doseStep = doseMode === "runTime" ? 0.25 : 1;
+  const doseLabel = doseMode === "runTime" ? "Run time" : "Servings";
+  const doseAriaLabel = doseMode === "runTime" ? "Run time in hours" : "Number of servings";
   const dryIngredients: Ingredient[] = [
     formula.primaryIngredient,
     { name: "Maltodextrin", gramsPerServing: formula.maltodextrinGrams },
@@ -76,9 +86,9 @@ function App() {
   ];
 
   const updateServings = (nextServings: number) => {
-    const safeServings = Math.max(1, nextServings);
+    const safeServings = Math.max(minimumDose, nextServings);
     setServings(safeServings);
-    setServingInput(String(safeServings));
+    setServingInput(formatNumber(safeServings));
   };
 
   const handleInputChange = (value: string) => {
@@ -93,16 +103,16 @@ function App() {
   };
 
   const commitInput = () => {
-    updateServings(parseServings(servingInput));
+    updateServings(parseDose(servingInput, minimumDose));
   };
 
   return (
     <main className="app-shell">
       <section className="calculator" aria-labelledby="calculator-title">
         <header className="hero">
-          <p className="eyebrow">Mix by serving count</p>
+          <p className="eyebrow">Mix by dosing target</p>
           <h1 id="calculator-title">DIY 320 Drink Mix Calculator</h1>
-          <p className="subtitle">One serving = 80 g carbs in a 500 ml finished drink.</p>
+          <p className="subtitle">One serving = 80 g carbs in a 500 ml finished drink. One hour run time = 80 g carbs.</p>
           <div className="ratio-callout" aria-label="Fructose to glucose ratio">
             <span>Fructose-to-glucose ratio</span>
             <strong>{formula.ratioText}</strong>
@@ -116,21 +126,40 @@ function App() {
             value={carbSource}
             onChange={(event) => setCarbSource(event.target.value as CarbSource)}
           >
-            <option value="sucrose">Sucrose / table sugar</option>
+            <option value="sucrose">Sucrose</option>
             <option value="fructose">Fructose</option>
           </select>
         </div>
 
+        <div className="dose-panel">
+          <label htmlFor="dose-mode">Dose by</label>
+          <select
+            id="dose-mode"
+            value={doseMode}
+            onChange={(event) => {
+              const nextMode = event.target.value as DoseMode;
+              setDoseMode(nextMode);
+              const nextMinimum = nextMode === "runTime" ? 0.1 : 1;
+              const nextServings = Math.max(nextMinimum, servings);
+              setServings(nextServings);
+              setServingInput(formatNumber(nextServings));
+            }}
+          >
+            <option value="servings">Servings</option>
+            <option value="runTime">Run time</option>
+          </select>
+        </div>
+
         <div className="serving-panel">
-          <label htmlFor="servings">Servings</label>
-          <div className="stepper" role="group" aria-label="Serving selector">
+          <label htmlFor="servings">{doseLabel}{doseMode === "runTime" ? " (hours)" : ""}</label>
+          <div className="stepper" role="group" aria-label={`${doseLabel} selector`}>
             <button
               type="button"
               className="icon-button"
-              onClick={() => updateServings(servings - 1)}
-              disabled={servings <= 1}
-              aria-label="Decrease servings"
-              title="Decrease servings"
+              onClick={() => updateServings(servings - doseStep)}
+              disabled={servings <= minimumDose}
+              aria-label={`Decrease ${doseLabel.toLowerCase()}`}
+              title={`Decrease ${doseLabel.toLowerCase()}`}
             >
               <Minus size={20} strokeWidth={2.5} />
             </button>
@@ -147,24 +176,35 @@ function App() {
                   event.currentTarget.blur();
                 }
               }}
-              aria-label="Number of servings"
+              aria-label={doseAriaLabel}
             />
 
             <button
               type="button"
               className="icon-button"
-              onClick={() => updateServings(servings + 1)}
-              aria-label="Increase servings"
-              title="Increase servings"
+              onClick={() => updateServings(servings + doseStep)}
+              aria-label={`Increase ${doseLabel.toLowerCase()}`}
+              title={`Increase ${doseLabel.toLowerCase()}`}
             >
               <Plus size={20} strokeWidth={2.5} />
             </button>
           </div>
+          <p className="dose-helper">
+            {doseMode === "runTime"
+              ? "Enter run length in hours. Example: 1.5 hours = 120 g carbs."
+              : "Enter servings directly. Example: 1.5 servings = 120 g carbs."}
+          </p>
         </div>
 
-        <section className="calories" aria-label="Total calories">
-          <span>Total calories</span>
-          <strong>{Math.round(carbohydrateGramsPerServing * caloriesPerCarbGram * servings)}</strong>
+        <section className="dose-summary" aria-label="Dose summary">
+          <div className="summary-card">
+            <span>Total carbs</span>
+            <strong>{formatGrams(carbohydrateGramsPerServing * servings)}</strong>
+          </div>
+          <div className="summary-card">
+            <span>Total calories</span>
+            <strong>{Math.round(carbohydrateGramsPerServing * caloriesPerCarbGram * servings)} kcal</strong>
+          </div>
         </section>
 
         <section className="ingredients" aria-labelledby="dry-ingredients-title">

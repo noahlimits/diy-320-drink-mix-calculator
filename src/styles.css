@@ -100,6 +100,7 @@ h1 {
 }
 
 .source-panel,
+.dose-panel,
 .serving-panel {
   border-block: 1px solid #ebe6dc;
   display: grid;
@@ -107,19 +108,22 @@ h1 {
   padding: 22px 0;
 }
 
-.source-panel {
+.source-panel,
+.dose-panel {
   border-bottom: 0;
 }
 
 .serving-panel label,
 .source-panel label,
+.dose-panel label,
 .section-heading h2 {
   color: #2a261f;
   font-size: 0.95rem;
   font-weight: 800;
 }
 
-.source-panel select {
+.source-panel select,
+.dose-panel select {
   appearance: none;
   background:
     linear-gradient(45deg, transparent 50%, #413a30 50%) calc(100% - 20px) 50% / 7px 7px no-repeat,
@@ -135,7 +139,8 @@ h1 {
   width: 100%;
 }
 
-.source-panel select:focus {
+.source-panel select:focus,
+.dose-panel select:focus {
   border-color: #6f8f72;
   box-shadow: 0 0 0 4px rgba(111, 143, 114, 0.16);
   outline: 0;
@@ -194,32 +199,37 @@ h1 {
   outline: 0;
 }
 
-.calories {
-  align-items: center;
+.dose-helper {
+  color: #665f55;
+  font-size: 0.88rem;
+  line-height: 1.4;
+}
+
+.dose-summary {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin-top: 18px;
+}
+
+.summary-card {
   background: #25211b;
   border-radius: 8px;
   color: #fff;
-  display: flex;
-  justify-content: space-between;
-  margin-top: 18px;
-  min-height: 64px;
+  display: grid;
+  gap: 10px;
+  min-height: 84px;
   padding: 16px;
 }
 
-.calories span {
+.summary-card span {
   font-weight: 800;
 }
 
-.calories strong {
-  font-size: 1.8rem;
+.summary-card strong {
+  font-size: 1.45rem;
   line-height: 1;
-}
-
-.calories strong::after {
-  content: " kcal";
-  color: #ded8cd;
-  font-size: 0.95rem;
-  font-weight: 700;
+  word-break: keep-all;
 }
 
 .ingredients {
@@ -369,5 +379,9 @@ h1 {
     align-items: flex-start;
     flex-direction: column;
     gap: 6px;
+  }
+
+  .dose-summary {
+    grid-template-columns: 1fr;
   }
 }

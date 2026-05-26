@@ -252,7 +252,7 @@ function App() {
       <section className="calculator" aria-labelledby="calculator-title">
         <header className="hero">
           <p className="eyebrow">Mix by dosing target</p>
-          <h1 id="calculator-title">DIY 320 Drink Mix Calculator</h1>
+          <h1 id="calculator-title">DIY Run Fuel Calculator</h1>
           <p className="subtitle">One serving = 80 g carbs in a 500 ml finished drink.</p>
           <p className="ratio-line">Fructose : Glucose = {getRatioLabel(ratio)}</p>
         </header>

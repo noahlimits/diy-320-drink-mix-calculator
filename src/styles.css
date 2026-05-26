@@ -82,20 +82,20 @@ h1 {
   border: 1px solid #d7e7e1;
   border-radius: 8px;
   color: #214038;
-  display: grid;
-  gap: 6px;
-  margin-top: 18px;
-  padding: 14px;
+  display: flex;
+  gap: 10px;
+  margin-top: 14px;
+  padding: 9px 10px;
 }
 
 .ratio-callout span {
-  font-size: 0.78rem;
+  font-size: 0.72rem;
   font-weight: 800;
   text-transform: uppercase;
 }
 
 .ratio-callout strong {
-  font-size: 1.25rem;
+  font-size: 0.92rem;
   line-height: 1.15;
 }
 
@@ -144,6 +144,76 @@ h1 {
   border-color: #6f8f72;
   box-shadow: 0 0 0 4px rgba(111, 143, 114, 0.16);
   outline: 0;
+}
+
+.toggle-panel {
+  align-items: center;
+  border-block: 1px solid #ebe6dc;
+  display: flex;
+  gap: 18px;
+  justify-content: space-between;
+  padding: 22px 0;
+}
+
+.toggle-panel span {
+  color: #2a261f;
+  font-size: 0.95rem;
+  font-weight: 800;
+}
+
+.toggle-panel p {
+  color: #665f55;
+  font-size: 0.88rem;
+  line-height: 1.4;
+  margin-top: 5px;
+}
+
+.switch {
+  flex: 0 0 auto;
+  position: relative;
+}
+
+.switch input {
+  height: 1px;
+  opacity: 0;
+  position: absolute;
+  width: 1px;
+}
+
+.switch span {
+  background: #d7d0c3;
+  border-radius: 999px;
+  cursor: pointer;
+  display: block;
+  height: 32px;
+  position: relative;
+  transition: background 160ms ease;
+  width: 58px;
+}
+
+.switch span::after {
+  background: #ffffff;
+  border-radius: 50%;
+  box-shadow: 0 2px 8px rgba(35, 30, 22, 0.18);
+  content: "";
+  height: 26px;
+  left: 3px;
+  position: absolute;
+  top: 3px;
+  transition: transform 160ms ease;
+  width: 26px;
+}
+
+.switch input:checked + span {
+  background: #6f8f72;
+}
+
+.switch input:checked + span::after {
+  transform: translateX(26px);
+}
+
+.switch input:focus-visible + span {
+  box-shadow: 0 0 0 4px rgba(111, 143, 114, 0.16);
 }
 
 .stepper {
@@ -310,6 +380,11 @@ h1 {
   margin-top: 6px;
 }
 
+.water .volume-note {
+  color: #35584e;
+  font-weight: 700;
+}
+
 .mixing {
   border-top: 1px solid #ebe6dc;
   display: grid;
@@ -363,6 +438,41 @@ h1 {
   font-size: 0.88rem;
   line-height: 1.45;
   margin-top: 18px;
+}
+
+.research-notes {
+  border-top: 1px solid #ebe6dc;
+  display: grid;
+  gap: 10px;
+  margin-top: 20px;
+  padding-top: 20px;
+}
+
+.research-notes h2 {
+  color: #2a261f;
+  font-size: 0.95rem;
+  font-weight: 800;
+}
+
+.research-notes p,
+.research-notes li {
+  color: #5f574c;
+  font-size: 0.88rem;
+  line-height: 1.45;
+}
+
+.research-notes ul {
+  display: grid;
+  gap: 7px;
+  margin: 0;
+  padding-left: 20px;
+}
+
+.research-notes a {
+  color: #1f5f49;
+  font-weight: 800;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 3px;
 }
 
 @media (max-width: 520px) {
